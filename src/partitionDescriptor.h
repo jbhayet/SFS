@@ -20,31 +20,31 @@ class partitionDescriptor {
 
   public:
     // Constructor from vector of data
-    partitionDescriptor(const unsigned int *data_,int sz): sum(0),length(sz) {
+    partitionDescriptor(const unsigned int *data_, unsigned int sz): sum(0),length(sz) {
         this->ptr   = std::shared_ptr<unsigned int>(new unsigned int[sz],std::default_delete<unsigned int[]>());
         this->data  = this->ptr.get();
         // Copy the data
         memcpy(this->data,data_,sz*sizeof(data_[0]));
         // Sum of the histogram elements
-        for (int k=0;k<sz;k++)
+        for (unsigned int k=0;k<sz;k++)
             this->sum+=  data_[k]*(k+1);
     }
 
     // Constructor from a string describing the partition
-    partitionDescriptor(const std::string &description_string, int sz): sum(0),length(sz) {
+    partitionDescriptor(const std::string &description_string, unsigned int sz): sum(0),length(sz) {
         // Create array to store the values
         this->ptr   = std::shared_ptr<unsigned int>(new unsigned int[sz],std::default_delete<unsigned int[]>());
         this->data  = this->ptr.get();
         // Get the values from the string
         std::stringstream ss(description_string);
-        for (int k=0;k<sz;k++) {
+        for (unsigned int k=0;k<sz;k++) {
           ss >> this->data[k];
           this->sum+=  this->data[k]*(k+1);
         }
     }
 
     // Constructor from an integer n (size) and a vector of integers being a partition
-    partitionDescriptor(const std::vector<unsigned int> &partition_list, int sz): sum(0),length(sz) {
+    partitionDescriptor(const std::vector<unsigned int> &partition_list, unsigned int sz): sum(0),length(sz) {
       // Create array to store the values
       this->ptr   = std::shared_ptr<unsigned int>(new unsigned int[sz],std::default_delete<unsigned int[]>());
       this->data  = this->ptr.get();
@@ -89,7 +89,7 @@ class partitionDescriptor {
             return false;
         if (other.sum!=this->sum)
             return false;
-        for (int k=0;k<this->length;k++)
+        for (unsigned int k=0;k<this->length;k++)
             if (other.data[k]!= this->data[k])
                 return false;
         return true;
@@ -99,7 +99,7 @@ class partitionDescriptor {
     inline bool operator<(const partitionDescriptor &other) const {
         if (other.length!=this->length)
             return false;
-        for (int k=0;k<this->length;k++)
+        for (unsigned int k=0;k<this->length;k++)
             if (this->data[k]>other[k])
                 return false;
         return true;
@@ -131,7 +131,7 @@ class partitionDescriptor {
     // Difference between the caller and the callee (elementwise)
     inline partitionDescriptor difference(const partitionDescriptor &other) const {
         partitionDescriptor p = partitionDescriptor(this->data,this->length);
-        for (int k=0;k<this->length;k++)
+        for (unsigned int k=0;k<this->length;k++)
             p.data[k] -= other.data[k];
         return p;
     }
@@ -158,7 +158,7 @@ class partitionDescriptor {
         if (this->length>5)
             return -1;
         unsigned int k = this->data[0];
-        for (int i=1;i<this->length;i++)
+        for (unsigned int i=1;i<this->length;i++)
             k = k*40+this->data[i];
         return k;
     }
@@ -176,7 +176,7 @@ class partitionDescriptor {
 };
 
 std::ostream& operator<<(std::ostream& os, const partitionDescriptor& pDsct) {
-  for (int i=0;i<pDsct.length;i++)
+  for (unsigned int i=0;i<pDsct.length;i++)
     os << pDsct.data[i] << " | ";
   return os;
 }

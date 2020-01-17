@@ -13,7 +13,7 @@ unsigned int countElements(const std::vector<unsigned int> &partition,unsigned i
 }
 
 // Recursive function for the partition of n
-void recAsc(int n,int m,int k,std::list<std::vector<unsigned int> > &listOfPartitions) {
+void recAsc(unsigned int n,unsigned int m,unsigned int k,std::list<std::vector<unsigned int> > &listOfPartitions) {
     if (m<1)
       return;
     if (m>n)
@@ -40,7 +40,7 @@ void recAsc(int n,int m,int k,std::list<std::vector<unsigned int> > &listOfParti
 }
 
 // Main function for generating all the partitions of n in ascendent order
-void ascPartition(int n, std::list<std::vector<unsigned int> > &listOfPartitions) {
+void ascPartition(unsigned int n, std::list<std::vector<unsigned int> > &listOfPartitions) {
     return recAsc(n,1,1,listOfPartitions);
 }
 
@@ -50,7 +50,7 @@ void ascPartition(int n, std::list<std::vector<unsigned int> > &listOfPartitions
 // m: minimal value for the elements of the partition
 // p: maximal value for the elements of the partition
 // k: current number
-void recAscVariant(int n,int p,int m,int k,std::list<std::vector<unsigned int> >&listOfPartitions) {
+void recAscVariant(unsigned int n,unsigned int p,unsigned int m,unsigned int k,std::list<std::vector<unsigned int> >&listOfPartitions) {
   if (m<1) return;
   if (m>p) return;
   if (m>n) return;
@@ -76,7 +76,7 @@ void recAscVariant(int n,int p,int m,int k,std::list<std::vector<unsigned int> >
 }
 
 // Main function for acendent partition
-void ascPartitionVariant(int n,int p, std::list<std::vector<unsigned int> > &listOfPartitions) {
+void ascPartitionVariant(unsigned int n,unsigned int p, std::list<std::vector<unsigned int> > &listOfPartitions) {
   recAscVariant(n,p,1,1,listOfPartitions);
   return;
 }

@@ -28,9 +28,9 @@ public:
 
   // Count the number of ways to group k*p elements into k sets of p elements
   inline unsigned int countSplitting(unsigned int k,unsigned int p) {
-    int count = 1;
+    unsigned int count = 1;
     //  \frac{1}{k!}\prod_i C(ip,i)
-    for (int i =1;i<=k;i++)
+    for (unsigned int i =1;i<=k;i++)
       count*=combinationsTable(i*p,p)/i;
     return count;
   }
@@ -50,8 +50,8 @@ public:
   // countSplittingTable[i][j] is the number of ways to group i*j elements into i sets of j elements
   void initCountSplittingTable(unsigned int n) {
 
-    for (int i=0;i<n;i++)
-      for (int j=0;j<n;j++)
+    for (unsigned int i=0;i<n;i++)
+      for (unsigned int j=0;j<n;j++)
         if (i*j<n)
           countSplittingTable(i,j) = countSplitting(i,j);
   }
@@ -118,6 +118,7 @@ public:
         if (d_diff<d_init) {
             // New version: Seems to be 20-30% faster
             partitionDescriptor d_init_remain = d_init.differenceAndShorten(d_diff,k);
+            // TODO: VOID HARD COPY
             partitionDescriptor d_end_remain  = d_end.shorten(k);
             if (debug) {
                 std::cout << "[DBG] Counting ways in forming: " << std::endl;
