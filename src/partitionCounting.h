@@ -62,7 +62,8 @@ void recAscVariant(unsigned int n,unsigned int p,unsigned int m,unsigned int k,s
     l[k]=x;
     // Get the partition of n-x, and will fill element k+1
     // TODO:
-    recAscVariant(n-x,p,x,k+1,listOfPartitions);
+    if (x<=n)
+      recAscVariant(n-x,p,x,k+1,listOfPartitions);
     // Increment x
     x++;
   }

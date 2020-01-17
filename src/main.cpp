@@ -19,7 +19,7 @@ int main() {
   partitionDescriptor d_end("0 1 1 2 0 0 0",7);
 
   // n is the maximum sum of the elements of the compositions
-  int n=40;
+  int n=30;
   // Definition of the alpha parameter, choose a value in (0,2)
   double alpha = 20.0;
   // This object will be called for counting the partitions
