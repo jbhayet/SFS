@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <fstream>
 #include "partitionCounting.h"
 #include "counting.h"
 #include "utils.h"
@@ -12,6 +14,13 @@ using namespace std;
 #include <chrono>
 typedef std::chrono::high_resolution_clock Clock;
 
+// define the format you want, you only need one instance of this...
+const static IOFormat CSVFormat(StreamPrecision, DontAlignCols, ", ", "\n");
+
+void writeToCSVfile(const string &name, const MatrixXi &matrix) {
+    std::ofstream file(name.c_str());
+    file << matrix.format(CSVFormat);
+}
 
 int main() {
 
@@ -19,7 +28,7 @@ int main() {
   partitionDescriptor d_end("0 1 1 2 0 0 0",7);
 
   // n is the maximum sum of the elements of the compositions
-  int n=30;
+  int n=20;
   // Definition of the alpha parameter, choose a value in (0,2)
   double alpha = 20.0;
   // This object will be called for counting the partitions
@@ -100,6 +109,8 @@ int main() {
   std::cout << "[INF] Took: " << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count() << " seconds" << std::endl;
 
   Counter::printCalls();
+  writeToCSVfile("Combin-20.csv",Combin);
+
   return 0;
 
 //      df = pd.DataFrame(data=Combin.astype(float))
