@@ -8,21 +8,14 @@
 #include <memory>
 #include <Eigen/Dense>
 
-
 // This is the class for partition descriptions
 class partitionDescriptor {
     unsigned int sum;
     unsigned int length;
-    // Keep the pointer in a smart pointer structure
-    std::shared_ptr<unsigned int> ptr;
-    // This is where the data will be
-    unsigned int *data;
-
+    unsigned int data[50];
   public:
     // Constructor from vector of data
     partitionDescriptor(const unsigned int *data_, unsigned int sz): sum(0),length(sz) {
-        this->ptr   = std::shared_ptr<unsigned int>(new unsigned int[sz],std::default_delete<unsigned int[]>());
-        this->data  = this->ptr.get();
         // Copy the data
         memcpy(this->data,data_,sz*sizeof(data_[0]));
         // Sum of the histogram elements
@@ -32,9 +25,6 @@ class partitionDescriptor {
 
     // Constructor from a string describing the partition
     partitionDescriptor(const std::string &description_string, unsigned int sz): sum(0),length(sz) {
-        // Create array to store the values
-        this->ptr   = std::shared_ptr<unsigned int>(new unsigned int[sz],std::default_delete<unsigned int[]>());
-        this->data  = this->ptr.get();
         // Get the values from the string
         std::stringstream ss(description_string);
         for (unsigned int k=0;k<sz;k++) {
@@ -45,9 +35,6 @@ class partitionDescriptor {
 
     // Constructor from an integer n (size) and a vector of integers being a partition
     partitionDescriptor(const std::vector<unsigned int> &partition_list, unsigned int sz): sum(0),length(sz) {
-      // Create array to store the values
-      this->ptr   = std::shared_ptr<unsigned int>(new unsigned int[sz],std::default_delete<unsigned int[]>());
-      this->data  = this->ptr.get();
       // Fill to zero
       memset(this->data,0,sz*sizeof(this->data[0]));
       for (auto n : partition_list)
@@ -55,24 +42,22 @@ class partitionDescriptor {
           this->data[n-1]++;
         }
     }
-
+#if 0
     // Copy constructor
     partitionDescriptor(const partitionDescriptor& other) {
-      this->ptr   = other.ptr;
-      this->data  = this->ptr.get();
       this->sum   = other.sum;
       this->length= other.length;
+      memcpy(this->data,other.data,length*sizeof(data[0]));
     }
 
     // Assignment operator
     partitionDescriptor& operator=(const partitionDescriptor& other) {
-      this->ptr   = other.ptr;
-      this->data  = this->ptr.get();
       this->sum   = other.sum;
       this->length= other.length;
+      memcpy(this->data,other.data,length*sizeof(data[0]));
       return *this;
     }
-
+#endif
     // Size of the descriptor
     inline int size() const {
         return this->length;

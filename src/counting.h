@@ -56,7 +56,8 @@ public:
   }
 
   inline void resetValues() {
-    values.assign(1000000000,-1);
+    // BAD IDEA
+    //values.assign(1000000000,-1);
   }
 
   static void printCalls() {
