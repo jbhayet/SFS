@@ -107,7 +107,7 @@ class partitionDescriptor {
 
     // Count possible assignations to get this descriptor from picking elements in d_init
     inline unsigned int countPossibleAssignations(const partitionDescriptor &d_init,const Eigen::MatrixXi &combinationsTable) {
-      unsigned int count = 1;
+        unsigned int count = 1;
         for (int k=this->length-1;k>=0;k--)
           if (this->data[k]>0) {
             //

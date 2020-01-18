@@ -17,13 +17,12 @@ class Counter {
 public:
   // Constructor
   Counter(unsigned int n) {
-    // TODO: specify n
-    countSplittingTable = Eigen::MatrixXi::Zero(n+1,n+1);
-    combinationsTable   = Eigen::MatrixXi::Zero(n+1,n+1);
+    countSplittingTable = Eigen::MatrixXi::Zero(n+3,n+3);
+    combinationsTable   = Eigen::MatrixXi::Zero(n+3,n+3);
 
     values.assign(1000000000,-1);
-    initCombinationsTable(n);
-    initCountSplittingTable(n);
+    initCombinationsTable(n+3);
+    initCountSplittingTable(n+3);
   }
 
   // Count the number of ways to group k*p elements into k sets of p elements
@@ -134,15 +133,16 @@ public:
                 std::cout << "[DBG] Splitting options " << ns << std::endl;
                 std::cout << countSplitting(delta,k+1) << std::endl;
             }
+
             unsigned int nc = d_diff.countPossibleAssignations(d_init,combinationsTable);
-            // std::cout << ns << " " << nc << std::endl;
             if (debug) {
-                //print('[DBG] valid partition')
-                //print('[DBG] new init: ')
-                std::cout << d_init_remain << std::endl;
-                //print('[DBG] new end: ')
-                std::cout << d_end_remain << std::endl;
-                //print('[DBG] count: ',nc)
+              std::cout << "[DBG] Possible assignations " << nc << std::endl;
+              //print('[DBG] valid partition')
+              //print('[DBG] new init: ')
+              std::cout << d_init_remain << std::endl;
+              //print('[DBG] new end: ')
+              std::cout << d_end_remain << std::endl;
+              //print('[DBG] count: ',nc)
             }
             count += ns*nc*recursiveCount_DescBreak(d_end_remain,d_init_remain);
           }
