@@ -17,7 +17,7 @@ typedef std::chrono::high_resolution_clock Clock;
 // define the format you want, you only need one instance of this...
 const static IOFormat CSVFormat(StreamPrecision, DontAlignCols, ", ", "\n");
 
-void writeToCSVfile(const string &name, const MatrixXi &matrix) {
+void writeToCSVfile(const string &name, const MatrixXUL &matrix) {
     std::ofstream file(name.c_str());
     file << matrix.format(CSVFormat);
 }
@@ -88,7 +88,7 @@ int main() {
 
   // Precompute all the Cbr or read them from file
   std::cout << "[INF] Computing counts" << std::endl;
-  MatrixXi Combin(dim,dim);
+  MatrixXUL Combin(dim,dim);
   bool computeCombin = true;
   if (computeCombin)
     for (int j=0; j<dim; j++) {

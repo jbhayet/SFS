@@ -2,14 +2,15 @@
 #include "partitionDescriptor.h"
 #include <Eigen/Dense>
 
+typedef Eigen::Matrix< unsigned int, Eigen::Dynamic, Eigen::Dynamic > 	MatrixXUL;
 
 class Counter {
   bool debug = false;
   // values= -np.ones((100000000,1), dtype=int)
   // calls      = 0
   // shortened  = 0
-  Eigen::MatrixXi countSplittingTable;
-  Eigen::MatrixXi combinationsTable;
+  MatrixXUL countSplittingTable;
+  MatrixXUL combinationsTable;
   std::vector<int> values;
   static unsigned int calls;
   static unsigned int shortened;
@@ -17,8 +18,8 @@ class Counter {
 public:
   // Constructor
   Counter(unsigned int n) {
-    countSplittingTable = Eigen::MatrixXi::Zero(n+3,n+3);
-    combinationsTable   = Eigen::MatrixXi::Zero(n+3,n+3);
+    countSplittingTable = MatrixXUL::Zero(n+3,n+3);
+    combinationsTable   = MatrixXUL::Zero(n+3,n+3);
 
     values.assign(1000000000,-1);
     initCombinationsTable(n+3);
@@ -26,8 +27,8 @@ public:
   }
 
   // Count the number of ways to group k*p elements into k sets of p elements
-  inline unsigned int countSplitting(unsigned int k,unsigned int p) {
-    unsigned int count = 1;
+  inline uint64_t countSplitting(unsigned int k,unsigned int p) {
+    uint64_t count = 1;
     //  \frac{1}{k!}\prod_i C(ip,i)
     for (unsigned int i =1;i<=k;i++)
       count*=combinationsTable(i*p,p)/i;
@@ -104,7 +105,7 @@ public:
     ascPartitionVariant((k+1)*delta,k,diff_partitions);
 
     // Count the ways to break d_end into d_init
-    unsigned int count = 0;
+    uint64_t count = 0;
     // Determine which of the partitions are compatible with the initial distribution
     for (auto diff_partition : diff_partitions) {
         // Convert the partition into a descriptor
@@ -129,13 +130,13 @@ public:
             }
             // Note: this counts the possible ways in forming the
             // partition d_diff *from the elements of d_init*
-            unsigned int ns = countSplittingTable(delta,k+1);
+            uint64_t ns = countSplittingTable(delta,k+1);
             if (debug) {
                 std::cout << "[DBG] Splitting options " << ns << std::endl;
                 std::cout << countSplitting(delta,k+1) << std::endl;
             }
 
-            unsigned int nc = d_diff.countPossibleAssignations(d_init,combinationsTable);
+            uint64_t nc = d_diff.countPossibleAssignations(d_init,combinationsTable);
             if (debug) {
               std::cout << "[DBG] Possible assignations " << nc << std::endl;
               //print('[DBG] valid partition')
