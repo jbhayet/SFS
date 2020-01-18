@@ -138,7 +138,7 @@ class partitionDescriptor {
 
     // Difference between the caller and the callee (elementwise); then shorten
     inline partitionDescriptor differenceAndShorten(const partitionDescriptor &other,int k) const {
-        partitionDescriptor p = partitionDescriptor(this->data,this->length);
+        partitionDescriptor p = partitionDescriptor(this->data,k);
         for (int i=0;i<k;i++) {
             p.data[i] -= other.data[i];
             p.sum     -= other.data[i]*(i+1);

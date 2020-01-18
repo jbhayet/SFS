@@ -40,12 +40,6 @@ int main() {
   cout << "--> Description of the final configuration" << endl;
   cout << d_end << endl;
 
-
-  // Pre-compute combinations table
-  //countSplittingTable  = initCountSplittingTable(n+1,combinationsTable)
-  // initCountSplittingTable(n,unsigned int **combinationsTable);
-
-
   // Partition generation
   cout << "[INF] Generating partitions of n=" << n << std::endl;
   // Enumerate all the partitions of n. They will come in ascending lexicographical order

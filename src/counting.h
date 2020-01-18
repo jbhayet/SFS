@@ -83,12 +83,13 @@ public:
     }
 
     // If the computation has already been done, do not repeat it!
+#if 0
     unsigned int key = d_init.key();
     if (key>0 && key<values.size() && values[key]>0) {
       shortened++;
       return values[key];
     }
-
+#endif
     // Find the highest k such that d_end[k]>d_init[k]
     // This supposes that the reverse of d_end is superior (in lexicographical order) than the reverse of d_init
     unsigned int k     = d_end.highestDifferent(d_init);
@@ -134,7 +135,7 @@ public:
                 std::cout << countSplitting(delta,k+1) << std::endl;
             }
             unsigned int nc = d_diff.countPossibleAssignations(d_init,combinationsTable);
-
+            // std::cout << ns << " " << nc << std::endl;
             if (debug) {
                 //print('[DBG] valid partition')
                 //print('[DBG] new init: ')
@@ -149,8 +150,10 @@ public:
           if (debug)
             std::cout << "[DBG] Invalid partition" << std::endl;
     }
+#if 0
     if (key>0 && key<values.size())
         values[key]=count;
+#endif
     return count;
   }
 };
