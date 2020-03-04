@@ -1,4 +1,6 @@
 // @author: jbhayet
+#ifndef __PARTITION_DESCRIPTOR__
+#define __PARTITION_DESCRIPTOR__
 #include <vector>
 #include <list>
 #include <string>
@@ -9,7 +11,9 @@
 #include <memory>
 #include <Eigen/Dense>
 
-#define SMAX 50
+#define SMAX 30
+#define LMAX 4
+
 typedef Eigen::Matrix< unsigned int, Eigen::Dynamic, Eigen::Dynamic > 	MatrixXUL;
 
 // This is the class for partition descriptions
@@ -45,6 +49,7 @@ class partitionDescriptor {
         if (n>0 && n<sz+1) {
           this->data[n-1]++;
         }
+      for (unsigned int k=0;k<sz;k++) sum+= this->data[k]*(k+1);
     }
 
     // Size of the descriptor
@@ -127,9 +132,17 @@ class partitionDescriptor {
         return (this->sum==other.sum);
     }
 
+    // Determine the max key (for using hashing)
+    static uint64_t maxKey() {
+        uint64_t k = SMAX;
+        for (unsigned int i=1;i<=LMAX;i++)
+            k = k*SMAX+SMAX;
+        return k;
+    }
+
     // Determine a key (for using hashing)
     inline uint64_t key() const {
-        if (this->length>5)
+        if (this->length>LMAX)
             return -1;
         uint64_t k = this->data[0];
         for (unsigned int i=1;i<this->length;i++)
@@ -154,3 +167,4 @@ std::ostream& operator<<(std::ostream& os, const partitionDescriptor& pDsct) {
     os << pDsct.data[i] << " | ";
   return os;
 }
+#endif
