@@ -66,6 +66,7 @@ void recAscVariant(unsigned int n,unsigned int p,unsigned int m,unsigned int k,c
       recAscVariant(n-x,p,x,k+1,d,listOfPartitions);
   }
   // Here we cannot add more x's so we just add the remainder
+  if (d[n-1]<1) return;
   l[k]=n;
   // Just adds the obtained partition to the list
   if (k>1 && n<=p) {

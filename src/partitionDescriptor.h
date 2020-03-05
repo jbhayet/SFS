@@ -12,7 +12,7 @@
 #include <Eigen/Dense>
 
 #define SMAX 30
-#define LMAX 4
+#define HASH_CHARS 4
 
 typedef Eigen::Matrix< unsigned int, Eigen::Dynamic, Eigen::Dynamic > 	MatrixXUL;
 
@@ -41,7 +41,7 @@ class partitionDescriptor {
         }
     }
 
-    // Constructor from an integer n (size) and a vector of integers being a partition
+    // Constructor from an integer sz (size) and a vector of integers being a partition
     partitionDescriptor(const std::vector<unsigned int> &partition_list, uint64_t sz): sum(0),length(sz) {
       // Fill to zero
       memset(this->data,0,sz*sizeof(this->data[0]));
@@ -135,14 +135,14 @@ class partitionDescriptor {
     // Determine the max key (for using hashing)
     static uint64_t maxKey() {
         uint64_t k = SMAX;
-        for (unsigned int i=1;i<=LMAX;i++)
+        for (unsigned int i=1;i<=HASH_CHARS;i++)
             k = k*SMAX+SMAX;
         return k;
     }
 
     // Determine a key (for using hashing)
     inline uint64_t key() const {
-        if (this->length>LMAX)
+        if (this->length>HASH_CHARS)
             return -1;
         uint64_t k = this->data[0];
         for (unsigned int i=1;i<this->length;i++)
@@ -157,6 +157,14 @@ class partitionDescriptor {
             if (this->data[k]>other.data[k])
                 return k;
       return -1;
+    }
+
+    // Check whether a vector of integers being a partition can be held within this descriptor
+    inline bool holds(const std::vector<unsigned int> &partition_list) const {
+      for (auto n : partition_list)
+        if (n>0 && n<this->length && this->data[n-1]<1)
+          return false;
+      return true;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const partitionDescriptor& dt);

@@ -4,9 +4,9 @@
 
 typedef Eigen::Matrix< unsigned int, Eigen::Dynamic, Eigen::Dynamic > 	MatrixXUL;
 
-#define HASH_TABLE_SIZE 300000000
-#define HASH_USE 0
-
+#define HASH_TABLE_SIZE 3000000
+#define HASH_USE 1
+uint64_t hash_table[HASH_TABLE_SIZE];
 class Counter {
   bool debug = false;
   // values= -np.ones((100000000,1), dtype=int)
@@ -14,7 +14,6 @@ class Counter {
   // shortened  = 0
   MatrixXUL countSplittingTable;
   MatrixXUL combinationsTable;
-  uint64_t values[HASH_TABLE_SIZE];
   static unsigned int calls;
   static unsigned int shortened;
 
@@ -58,9 +57,7 @@ public:
   }
 
   inline void resetValues() {
-    // BAD IDEA
-    //values.assign(1000000000,-1);
-
+    memset(hash_table,0,HASH_TABLE_SIZE*sizeof(hash_table[0]));
   }
 
   static void printCalls() {
@@ -88,9 +85,9 @@ public:
     // If the computation has already been done, do not repeat it!
 #if HASH_USE
     unsigned int key = d_init.key();
-    if (key>0 && key<values.size() && values[key]>0) {
+    if (key>0 && key<HASH_TABLE_SIZE && hash_table[key]>0) {
       shortened++;
-      return values[key];
+      return hash_table[key];
     }
 #endif
     // Find the highest k such that d_end[k]>d_init[k]
@@ -101,8 +98,6 @@ public:
       std::cout << "[DBG] Position of first difference " << k << std::endl;
     }
     // Generate differential partitions of (d_end[k]-d_init[k])*(k+1)
-    // TODO: modify ascPartitionVariant to enforce d_init.superior(d_diff))
-    //       and avoid incorporating partitions for which this will be violated
     std::list<std::vector<unsigned int> > diff_partitions;
     ascPartitionVariant((k+1)*delta,k,d_init,diff_partitions);
 
@@ -155,8 +150,8 @@ public:
             std::cout << "[DBG] Invalid partition" << std::endl;
     }
 #if HASH_USE
-    if (key>0 && key<values.size())
-        values[key]=count;
+    if (key>0 && key<HASH_TABLE_SIZE)
+        hash_table[key]=count;
 #endif
     return count;
   }
