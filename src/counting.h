@@ -4,6 +4,9 @@
 
 typedef Eigen::Matrix< unsigned int, Eigen::Dynamic, Eigen::Dynamic > 	MatrixXUL;
 
+#define HASH_TABLE_SIZE 300000000
+#define HASH_USE 0
+
 class Counter {
   bool debug = false;
   // values= -np.ones((100000000,1), dtype=int)
@@ -11,7 +14,7 @@ class Counter {
   // shortened  = 0
   MatrixXUL countSplittingTable;
   MatrixXUL combinationsTable;
-  uint64_t values[300000000];
+  uint64_t values[HASH_TABLE_SIZE];
   static unsigned int calls;
   static unsigned int shortened;
 
@@ -20,8 +23,6 @@ public:
   Counter(unsigned int n) {
     countSplittingTable = MatrixXUL::Zero(n+3,n+3);
     combinationsTable   = MatrixXUL::Zero(n+3,n+3);
-
-    values.assign(1000000000,-1);
     initCombinationsTable(n+3);
     initCountSplittingTable(n+3);
   }
@@ -85,7 +86,7 @@ public:
     }
 
     // If the computation has already been done, do not repeat it!
-#if 1
+#if HASH_USE
     unsigned int key = d_init.key();
     if (key>0 && key<values.size() && values[key]>0) {
       shortened++;
@@ -153,7 +154,7 @@ public:
           if (debug)
             std::cout << "[DBG] Invalid partition" << std::endl;
     }
-#if 1
+#if HASH_USE
     if (key>0 && key<values.size())
         values[key]=count;
 #endif

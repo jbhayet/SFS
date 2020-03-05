@@ -31,7 +31,6 @@ int main() {
   // n is the maximum sum of the elements of the compositions
   int n=20;
   std::cout << partitionDescriptor::maxKey() << std::endl;
-  return 0;
   // Definition of the alpha parameter, choose a value in (0,2)
   double alpha = 20.0;
   // This object will be called for counting the partitions
