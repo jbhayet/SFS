@@ -11,11 +11,22 @@ using namespace Eigen;
 using namespace std;
 
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <chrono>
 typedef std::chrono::high_resolution_clock Clock;
 
 // define the format you want, you only need one instance of this...
 const static IOFormat CSVFormat(StreamPrecision, DontAlignCols, ", ", "\n");
+
+static void show_usage(std::string name)
+{
+    std::cerr << "Usage: " << name << " <option(s)>"
+              << "Options:\n"
+              << "\t-h,--help\t\tShow this help message\n"
+              << "\t-n, NUM\tSpecify the number n from which the partitions are generated. Default: 20."
+              << std::endl;
+}
 
 // To write the results in a CSV file
 void writeToCSVfile(const string &name, const MatrixXUL &matrix) {
@@ -23,25 +34,31 @@ void writeToCSVfile(const string &name, const MatrixXUL &matrix) {
     file << matrix.format(CSVFormat);
 }
 
-int main() {
-
-  partitionDescriptor d_init("4 1 1 1 0 0 0",7);
-  partitionDescriptor d_end("0 1 1 2 0 0 0",7);
-
+int main(int argc, char *argv[]) {
   // n is the maximum sum of the elements of the compositions
   int n=20;
-  std::cout << partitionDescriptor::maxKey() << std::endl;
+  for (int i = 1; i < argc; ++i) {
+    std::string arg = argv[i];
+    if ((arg == "-h") || (arg == "--help")) {
+        show_usage(argv[0]);
+        return 0;
+    } else if ((arg == "-n")) {
+        if (i + 1 < argc) { // Make sure we aren't at the end of argv!
+            n = atoi(argv[++i]); // Increment 'i' so we don't get the argument as the next argv[i].
+        } else { // Uh-oh, there was no argument to the destination option.
+            std::cerr << "The -n option requires one argument." << std::endl;
+            return 1;
+        }
+    } else {
+      show_usage(argv[0]);
+      return 1;
+    }
+  }
+
   // Definition of the alpha parameter, choose a value in (0,2)
   double alpha = 20.0;
   // This object will be called for counting the partitions
   Counter ct(n);
-
-  // Display initial/final configurations
-  cout << "--> Description of the initial configuration" << endl;
-  cout << d_init << endl;
-  cout << "--> Description of the final configuration" << endl;
-  cout << d_end << endl;
-
   // Partition generation
   cout << "[INF] Generating partitions of n=" << n << std::endl;
   // Enumerate all the partitions of n. They will come in ascending lexicographical order
@@ -105,7 +122,11 @@ int main() {
   std::cout << "[INF] Took: " << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count() << " seconds" << std::endl;
 
   Counter::printCalls();
-  writeToCSVfile("Combin-20.csv",Combin);
+
+  std::string fileName;
+  std::stringstream ss(fileName);
+  ss << "Combin-" << setw(3) << setfill('0') << n << ".csv";
+  writeToCSVfile(ss.str(),Combin);
 
   return 0;
 

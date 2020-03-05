@@ -50,7 +50,7 @@ void ascPartition(unsigned int n, std::list<std::vector<unsigned int> > &listOfP
 // n: the number we want to decompose into a partition
 // m: minimal value for the elements of the partition
 // p: maximal value for the elements of the partition
-// k: current number
+// k: current higher index for the elements of the partition
 void recAscVariant(unsigned int n,unsigned int p,unsigned int m,unsigned int k,const partitionDescriptor &d,std::list<std::vector<unsigned int> >&listOfPartitions) {
   if (m<1) return;
   if (m>p) return;
@@ -61,18 +61,16 @@ void recAscVariant(unsigned int n,unsigned int p,unsigned int m,unsigned int k,c
     // Get x into the description
     l[k]=x;
     // Get the partition of n-x, and will fill element k+1
-    // TODO:
     if (x<=n)
       recAscVariant(n-x,p,x,k+1,d,listOfPartitions);
   }
   // Here we cannot add more x's so we just add the remainder
+  // but we first check if this remainder can be used in d
   if (d[n-1]<1) return;
   l[k]=n;
-  // Just adds the obtained partition to the list
+  // Adds the obtained partition to the list
   if (k>1 && n<=p) {
     std::vector<unsigned int> newPartition(l+1,l+k+1);
-    //for (unsigned int i=1;i<=k;i++) std::cout << l[i] << " ";
-    //std::cout << std::endl;
     listOfPartitions.push_back(newPartition);
   }
 }
