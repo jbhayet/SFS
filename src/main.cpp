@@ -17,6 +17,7 @@ typedef std::chrono::high_resolution_clock Clock;
 // define the format you want, you only need one instance of this...
 const static IOFormat CSVFormat(StreamPrecision, DontAlignCols, ", ", "\n");
 
+// To write the results in a CSV file
 void writeToCSVfile(const string &name, const MatrixXUL &matrix) {
     std::ofstream file(name.c_str());
     file << matrix.format(CSVFormat);
@@ -29,6 +30,8 @@ int main() {
 
   // n is the maximum sum of the elements of the compositions
   int n=20;
+  std::cout << partitionDescriptor::maxKey() << std::endl;
+  return 0;
   // Definition of the alpha parameter, choose a value in (0,2)
   double alpha = 20.0;
   // This object will be called for counting the partitions

@@ -11,7 +11,7 @@ class Counter {
   // shortened  = 0
   MatrixXUL countSplittingTable;
   MatrixXUL combinationsTable;
-  std::vector<int> values;
+  uint64_t values[300000000];
   static unsigned int calls;
   static unsigned int shortened;
 
@@ -59,6 +59,7 @@ public:
   inline void resetValues() {
     // BAD IDEA
     //values.assign(1000000000,-1);
+
   }
 
   static void printCalls() {
@@ -84,7 +85,7 @@ public:
     }
 
     // If the computation has already been done, do not repeat it!
-#if 0
+#if 1
     unsigned int key = d_init.key();
     if (key>0 && key<values.size() && values[key]>0) {
       shortened++;
@@ -102,7 +103,7 @@ public:
     // TODO: modify ascPartitionVariant to enforce d_init.superior(d_diff))
     //       and avoid incorporating partitions for which this will be violated
     std::list<std::vector<unsigned int> > diff_partitions;
-    ascPartitionVariant((k+1)*delta,k,diff_partitions);
+    ascPartitionVariant((k+1)*delta,k,d_init,diff_partitions);
 
     // Count the ways to break d_end into d_init
     uint64_t count = 0;
@@ -152,7 +153,7 @@ public:
           if (debug)
             std::cout << "[DBG] Invalid partition" << std::endl;
     }
-#if 0
+#if 1
     if (key>0 && key<values.size())
         values[key]=count;
 #endif
