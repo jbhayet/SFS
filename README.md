@@ -17,6 +17,10 @@ make
 
 Run the program as follows:
 
-``Code
+```Code
 ./testSFS -n 30
 ```
+
+## How do I get the output?
+
+The output is stored in a .csv file that should be named 'Combin-030.csv' (for n=30)
