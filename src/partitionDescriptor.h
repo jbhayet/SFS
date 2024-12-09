@@ -18,8 +18,8 @@ typedef Eigen::Matrix< unsigned int, Eigen::Dynamic, Eigen::Dynamic > 	MatrixXUL
 
 // This is the class for partition descriptions
 class partitionDescriptor {
-    uint64_t sum;
-    uint64_t length;
+    uint64_t sum;        // Total sum of the histogram
+    uint64_t length;     // Length of the histogram
     uint64_t data[SMAX];
   public:
     // Constructor from vector of data
@@ -57,6 +57,11 @@ class partitionDescriptor {
         return this->length;
     }
 
+    // Sum of the descriptor
+    inline uint64_t get_sum() const {
+        return this->sum;
+    }
+
     // Operator []
     inline const uint64_t& operator[](int idx) const {
       return this->data[idx];
@@ -74,7 +79,7 @@ class partitionDescriptor {
         return true;
     }
 
-    // Check if the caller is superior (elementwise) to the callee
+    // Check if the caller is inferior (lexicographically) to the callee
     inline bool operator<(const partitionDescriptor &other) const {
         if (other.length!=this->length)
             return false;
@@ -130,6 +135,27 @@ class partitionDescriptor {
         if (other.length!=this->length)
             return false;
         return (this->sum==other.sum);
+    }
+
+    // Check if the calling descriptor can be a descendent of the first correspond to the same total number
+    inline bool descendent(const partitionDescriptor&other) const {
+      if (!compatible(other))
+        return false;
+      for (int k=0;k<(int)this->length;k++)
+        if (this->data[k]!=other.data[k]) {
+          if (this->data[k]>other.data[k])
+            return false;
+          else
+            break;  
+        }
+      for (int k=(int)this->length-1;k>=0;k--)
+        if (this->data[k]!=other.data[k]) {
+          if (this->data[k]<other.data[k])
+            return false;
+          else
+            break;  
+        }
+      return true;
     }
 
     // Determine the max key (for using hashing)

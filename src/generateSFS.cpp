@@ -1,16 +1,16 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <Eigen/Dense>
+
 #include "partitionCounting.h"
 #include "counting.h"
 #include "utils.h"
 
-#include <Eigen/Dense>
 
 using namespace Eigen;
 using namespace std;
 
-#include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <chrono>
@@ -28,6 +28,7 @@ static void show_usage(std::string name)
               << std::endl;
 }
 
+
 // To write the results in a CSV file
 void writeToCSVfile(const string &name, const MatrixXUL &matrix) {
     std::ofstream file(name.c_str());
@@ -36,7 +37,7 @@ void writeToCSVfile(const string &name, const MatrixXUL &matrix) {
 
 int main(int argc, char *argv[]) {
   // n is the maximum sum of the elements of the compositions
-  int n=20;
+  int n=25;
   for (int i = 1; i < argc; ++i) {
     std::string arg = argv[i];
     if ((arg == "-h") || (arg == "--help")) {
@@ -56,22 +57,25 @@ int main(int argc, char *argv[]) {
   }
 
   // Definition of the alpha parameter, choose a value in (0,2)
-  double alpha = 20.0;
+  // double alpha = 20.0;
   // This object will be called for counting the partitions
   Counter ct(n);
   // Partition generation
   cout << "[INF] Generating partitions of n=" << n << std::endl;
-  // Enumerate all the partitions of n. They will come in ascending lexicographical order
+  // Enumerate all the partitions [a_1,...,a_n] from n, such that sum_i i a_i = n. 
+  // They will come in ascending lexicographical order
   std::list<std::vector<unsigned int> >partitionsOfN;
   ascPartition(n,partitionsOfN);
 
   // Add the trivial one because the algorithm does not give it as an output
   std::vector<unsigned int> trivialPartition; trivialPartition.push_back(n);
   partitionsOfN.push_back(trivialPartition);
+  cout << "[INF] First partition" << std::endl;
+  printPartition(partitionsOfN.front());
 
   // Number of partitions
   int dim = partitionsOfN.size();
-  cout << "[INF] Number of partitions:" << dim << std::endl;
+  cout << "[INF] Number of partitions: " << dim << std::endl;
 
   // Esta es la parte que nos interesa, vamos a estudiar una cadena de Markov con valores en las composiciones
   // (lo que llamo composiciones es nuestra manera de representar las particiones con el número
@@ -79,7 +83,6 @@ int main(int argc, char *argv[]) {
 
   cout << "[INF] Filling Rmatrix" << endl;
   // Definition of the state matrix, the rows Rmatrix[i] are compositions
-  // Rmatrix= np.zeros((dim,n), dtype=int)
   MatrixXi Rmatrix(dim,n);
   int i=0;
   // Enumerate all the generated partitions
@@ -91,7 +94,6 @@ int main(int argc, char *argv[]) {
     }
     i++;
   }
-  cout << Rmatrix << endl;
 
   // Precompute all the sum(R[i])
   cout << "[INF] Computing rowwise sums" << endl;
@@ -108,15 +110,13 @@ int main(int argc, char *argv[]) {
   // Precompute all the Cbr or read them from file
   std::cout << "[INF] Computing counts" << std::endl;
   MatrixXUL Combin(dim,dim);
-  bool computeCombin = true;
-  if (computeCombin)
-    for (int j=0; j<dim; j++) {
-      printBar((float)j/dim);
-      ct.resetValues();
-      for (int i=0; i<j; i++) {
-        Combin(i,j)=ct.recursiveCount_DescBreak(P[i],P[j]);
-      }
+  for (int j=0; j<dim; j++) {
+    printBar((float)j/dim);
+    ct.resetValues();
+    for (int i=0; i<j; i++) {
+      Combin(i,j)=ct.recursiveCount_DescBreak(P[i],P[j]);
     }
+  }
   auto t2 = Clock::now();
   std::cout << std::endl;
   std::cout << "[INF] Took: " << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count() << " seconds" << std::endl;

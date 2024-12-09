@@ -1,11 +1,13 @@
 // @author: jbhayet
 #include <list>
+#include <iostream>
 #include <vector>
 #include "partitionDescriptor.h"
 
 // TODO: this value should be updated
 unsigned int l[180];
 
+// Counts the number of elements in a partition with value k
 unsigned int countElements(const std::vector<unsigned int> &partition,unsigned int k) {
   unsigned int c = 0;
   for (auto l: partition)
@@ -13,7 +15,18 @@ unsigned int countElements(const std::vector<unsigned int> &partition,unsigned i
   return c;
 }
 
+// Prints a partition
+void printPartition(const std::vector<unsigned int> &partition) {
+  for (auto n : partition)
+    std::cout << n << " ";
+  std::cout << std::endl;
+}
+
+
 // Recursive function for the partition of n
+// n: the number we want to decompose into a partition
+// m: minimal value for the elements of the partition; this allows for the partition to be described in ascending order
+// k: index for the current element of the partition
 void recAsc(unsigned int n,unsigned int m,unsigned int k,std::list<std::vector<unsigned int> > &listOfPartitions) {
     if (m<1)
       return;
@@ -30,11 +43,11 @@ void recAsc(unsigned int n,unsigned int m,unsigned int k,std::list<std::vector<u
         // Increment x
         x = x+1;
     }
-    // We cannot add anymore x's, so we add the remainder to
-    // complete the partition
-    l[k]=n;
-    // Just adds it
+    // When the recursive call is not the first one, we add the remainder to complete the currently built partition
     if (k>1) {
+      // We cannot add anymore x's, so we add the remainder to
+      // complete the partition
+      l[k]=n;
       std::vector<unsigned int> newPartition(l+1,l+k+1);
       listOfPartitions.push_back(newPartition);
     }

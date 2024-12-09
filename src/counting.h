@@ -8,7 +8,7 @@ typedef Eigen::Matrix< unsigned int, Eigen::Dynamic, Eigen::Dynamic > 	MatrixXUL
 #define HASH_USE 1
 uint64_t hash_table[HASH_TABLE_SIZE];
 class Counter {
-  bool debug = false;
+  bool debug;
   // values= -np.ones((100000000,1), dtype=int)
   // calls      = 0
   // shortened  = 0
@@ -19,7 +19,7 @@ class Counter {
 
 public:
   // Constructor
-  Counter(unsigned int n) {
+  Counter(unsigned int n, bool dbg=false) : debug(dbg) {
     countSplittingTable = MatrixXUL::Zero(n+3,n+3);
     combinationsTable   = MatrixXUL::Zero(n+3,n+3);
     initCombinationsTable(n+3);
@@ -30,12 +30,13 @@ public:
   inline uint64_t countSplitting(unsigned int k,unsigned int p) {
     uint64_t count = 1;
     //  \frac{1}{k!}\prod_i C(ip,i)
-    for (unsigned int i =1;i<=k;i++)
-      count*=combinationsTable(i*p,p)/i;
+    for (unsigned int i =1;i<=k;i++) {
+      count*= combinationsTable(i*p,p)/i;
+    }
     return count;
   }
 
-  // Pascal triangle
+  // Pascal triangle for binomial coefficients
   void initCombinationsTable(int n) {
       for (int i=0;i<n;i++) {
           combinationsTable(i,0)=1;
@@ -68,6 +69,7 @@ public:
                                         const partitionDescriptor&d_end) {
     // global calls
     calls++;
+
     // If the init and end configurations are not compatible, this is a dead-end
     // (compatibility is evaluated by checking the sum of elements)
     if (d_end.compatible(d_init)==false) {
@@ -95,9 +97,9 @@ public:
     unsigned int k     = d_end.highestDifferent(d_init);
     unsigned int delta = d_end[k]-d_init[k];
     if (debug) {
-      std::cout << "[DBG] Position of first difference " << k << std::endl;
+      std::cout << "[DBG] Position of farthest difference " << k << std::endl;
     }
-    // Generate differential partitions of (d_end[k]-d_init[k])*(k+1)
+    // Generate differential partitions of (d_end[k]-d_init[k])*(k+1) with max. group size k
     std::list<std::vector<unsigned int> > diff_partitions;
     ascPartitionVariant((k+1)*delta,k,d_init,diff_partitions);
 
@@ -110,7 +112,7 @@ public:
         if (debug) {
             std::cout << "[DBG] Describing partitions of " << (k+1)*delta << std::endl;
             std::cout << d_diff << std::endl;
-            std::cout << "[DBG] with " << delta << std::endl;
+            std::cout << "[DBG] with delta = " << delta << std::endl;
         }
         // TODO: should be more efficient at that point (most of the time is spent here)
         // If it is possible to assign d_diff
@@ -127,23 +129,27 @@ public:
             }
             // Note: this counts the possible ways in forming the
             // partition d_diff *from the elements of d_init*
-            uint64_t ns = countSplittingTable(delta,k+1);
+            //uint64_t ns = countSplittingTable(delta,k+1);
+            uint64_t ns = countSplitting(delta,k+1);
             if (debug) {
                 std::cout << "[DBG] Splitting options " << ns << std::endl;
-                std::cout << countSplitting(delta,k+1) << std::endl;
             }
 
             uint64_t nc = d_diff.countPossibleAssignations(d_init,combinationsTable);
             if (debug) {
               std::cout << "[DBG] Possible assignations " << nc << std::endl;
-              //print('[DBG] valid partition')
-              //print('[DBG] new init: ')
-              std::cout << d_init_remain << std::endl;
-              //print('[DBG] new end: ')
-              std::cout << d_end_remain << std::endl;
-              //print('[DBG] count: ',nc)
+              std::cout << "[DBG] Valid partition" << std::endl;
+              std::cout << "[DBG] New init:" << std::endl; 
+              std::cout << "[DBG] " << d_init_remain << std::endl;
+              std::cout << "[DBG] New end:" << std::endl;
+              std::cout << "[DBG] " << d_end_remain << std::endl;
+              std::cout << "[DBG] Count: " << ns*nc << std::endl;
             }
-            count += ns*nc*recursiveCount_DescBreak(d_end_remain,d_init_remain);
+            uint64_t nsub = recursiveCount_DescBreak(d_init_remain,d_end_remain);
+            if (debug) {
+              std::cout << "[DBG] count from recursive call: " << nsub << std::endl;
+            }
+            count += ns*nc*nsub;
           }
         else
           if (debug)
